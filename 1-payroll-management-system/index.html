@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CorpPay Enterprise | Payroll Management System</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top Enterprise Navigation Header -->
+  <header class="portal-header">
+    <div class="header-brand">
+      <div class="brand-icon">₹</div>
+      <div>
+        <div class="brand-title">CorpPay Enterprise</div>
+        <div class="brand-subtitle">Automated Corporate Payroll & Remittance Engine</div>
+      </div>
+    </div>
+    <div class="header-controls">
+      <a href="../index.html" class="hub-return-link">
+        <span>◂ Back to Suite Hub</span>
+      </a>
+      <span class="system-badge">System Status: OPERATIONAL</span>
+      <div class="user-profile">
+        <div class="user-avatar">AD</div>
+        <div class="user-details">
+          <span class="user-name">Admin (Payroll Div.)</span>
+          <span class="user-role">Superintendent Access</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sub-navigation & Period Selector -->
+  <nav class="sub-nav">
+    <div class="breadcrumbs">
+      <span>Enterprise Hub</span> &gt;
+      <span>Financial Operations</span> &gt;
+      <span class="current">Employee Payroll Management</span>
+    </div>
+    <div class="period-indicator">
+      <label for="payrollPeriodSelect">Active Payroll Cycle:</label>
+      <select id="payrollPeriodSelect" class="period-select">
+        <option value="2026-10" selected>October 2026 (Monthly Regular)</option>
+        <option value="2026-09">September 2026 (Archived)</option>
+        <option value="2026-08">August 2026 (Archived)</option>
+      </select>
+    </div>
+  </nav>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-wrapper">
+
+    <!-- KPI Summary Row -->
+    <section class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-title">Gross Payroll Outflow</div>
+        <div class="kpi-value" id="kpiTotalGross">₹0</div>
+        <div class="kpi-subtext">Base + HRA + Special Allowances</div>
+      </div>
+      <div class="kpi-card kpi-purple">
+        <div class="kpi-title">Total Active Employees</div>
+        <div class="kpi-value" id="kpiTotalCount">0</div>
+        <div class="kpi-subtext">Enrolled in salary structure</div>
+      </div>
+      <div class="kpi-card kpi-success">
+        <div class="kpi-title">Net Disbursed</div>
+        <div class="kpi-value" id="kpiPaidDisbursed">0</div>
+        <div class="kpi-subtext">Direct deposit remittance done</div>
+      </div>
+      <div class="kpi-card kpi-warning">
+        <div class="kpi-title">Action Required</div>
+        <div class="kpi-value" id="kpiPendingAction">0</div>
+        <div class="kpi-subtext">Pending approval & verification</div>
+      </div>
+      <div class="kpi-card kpi-info">
+        <div class="kpi-title">Average Gross Compensation</div>
+        <div class="kpi-value" id="kpiAverageSalary">₹0</div>
+        <div class="kpi-subtext">Per employee baseline</div>
+      </div>
+    </section>
+
+    <!-- Table Action Toolbar -->
+    <div class="action-toolbar">
+      <div class="filter-group">
+        <div class="search-input-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="Search by Employee ID, Name, or Role..." autocomplete="off">
+        </div>
+        <select id="filterDept" class="filter-select">
+          <option value="">All Departments</option>
+          <option value="Engineering">Engineering</option>
+          <option value="Finance">Finance</option>
+          <option value="Human Resources">Human Resources</option>
+          <option value="Operations">Operations</option>
+          <option value="Sales">Sales</option>
+        </select>
+        <select id="filterStatus" class="filter-select">
+          <option value="">All Statuses</option>
+          <option value="Draft">Draft</option>
+          <option value="Approved">Approved</option>
+          <option value="Paid">Paid</option>
+        </select>
+      </div>
+
+      <div class="btn-toolbar-group">
+        <button id="btnAddEmployee" class="btn btn-primary">+ Add Employee</button>
+        <button id="btnBatchProcess" class="btn btn-success" title="Approve drafts & Disburse approved records">⚡ Batch Process</button>
+        <button id="btnExportCSV" class="btn btn-secondary">📥 Export CSV</button>
+        <button id="btnResetData" class="btn btn-secondary" title="Restore factory seed records">↺ Reset Data</button>
+      </div>
+    </div>
+
+    <!-- High-Density Enterprise Table -->
+    <div class="table-container">
+      <table class="corporate-table">
+        <thead>
+          <tr>
+            <th data-col="id" style="width: 90px;">Emp ID</th>
+            <th data-col="name">Employee & Title</th>
+            <th data-col="department">Department</th>
+            <th data-col="basicPay" class="numeric">Basic Pay</th>
+            <th class="numeric non-sortable">Allowances</th>
+            <th class="numeric bold non-sortable">Gross Salary</th>
+            <th class="numeric non-sortable">Deductions</th>
+            <th data-col="net" class="numeric bold">Net Payable</th>
+            <th data-col="status">Status</th>
+            <th data-col="payPeriod">Period</th>
+            <th class="non-sortable" style="width: 190px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="payrollTableBody">
+          <!-- Dynamically generated rows -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Table Pagination Footer -->
+    <div class="table-footer">
+      <div id="tableInfo">Showing 0 to 0 of 0 records</div>
+      <div class="pagination-controls">
+        <button id="prevPageBtn" class="page-btn">Previous</button>
+        <span id="pageNumberIndicator" style="margin: 0 8px; font-weight: 600;">Page 1 of 1</span>
+        <button id="nextPageBtn" class="page-btn">Next</button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ======================================================================
+       MODAL: Add / Edit Employee Payroll Profile
+       ====================================================================== -->
+  <div id="employeeModal" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modalTitle" class="modal-title">Employee Payroll Record</h3>
+        <button type="button" class="modal-close-btn" data-close-modal>&times;</button>
+      </div>
+      <form id="employeeForm">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Employee ID</label>
+              <input type="text" id="modalEmpId" class="form-control" required placeholder="e.g. EMP-1009">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <input type="text" id="modalName" class="form-control" required placeholder="e.g. Priya Sundaram">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input type="email" id="modalEmail" class="form-control" placeholder="priya.s@corp.internal">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Department</label>
+              <select id="modalDepartment" class="form-control" required>
+                <option value="Engineering">Engineering</option>
+                <option value="Finance">Finance</option>
+                <option value="Human Resources">Human Resources</option>
+                <option value="Operations">Operations</option>
+                <option value="Sales">Sales</option>
+              </select>
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">Designation / Official Title</label>
+              <input type="text" id="modalDesignation" class="form-control" required placeholder="e.g. Senior Product Manager">
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Basic Salary (Monthly ₹)</label>
+              <input type="number" id="modalBasicPay" class="form-control" min="0" step="500" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">House Rent Allowance (HRA ₹)</label>
+              <input type="number" id="modalHra" class="form-control" min="0" step="500" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Special Allowance (₹)</label>
+              <input type="number" id="modalAllowance" class="form-control" min="0" step="500" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Provident Fund Deduction (PF ₹)</label>
+              <input type="number" id="modalPf" class="form-control" min="0" step="100" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Professional & Income Tax (TDS ₹)</label>
+              <input type="number" id="modalTax" class="form-control" min="0" step="100" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Group Medical Insurance (₹)</label>
+              <input type="number" id="modalInsurance" class="form-control" min="0" step="100" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Approval Status</label>
+              <select id="modalStatus" class="form-control" required>
+                <option value="Draft">Draft</option>
+                <option value="Approved">Approved</option>
+                <option value="Paid">Paid</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Pay Period</label>
+              <input type="text" id="modalPeriod" class="form-control" value="October 2026" required>
+            </div>
+          </div>
+
+          <!-- Realtime live calculation display -->
+          <div class="salary-calc-box">
+            <div class="salary-calc-item">
+              <div class="calc-label">Calculated Gross</div>
+              <div class="calc-val" id="modalCalcGross">₹0</div>
+            </div>
+            <div class="salary-calc-item">
+              <div class="calc-label" style="color: #b91c1c;">Total Deductions</div>
+              <div class="calc-val" id="modalCalcDeductions" style="color: #b91c1c;">-₹0</div>
+            </div>
+            <div class="salary-calc-item">
+              <div class="calc-label" style="color: #15803d;">Net Take Home</div>
+              <div class="calc-val" id="modalCalcNet" style="color: #15803d;">₹0</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal>Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Payroll Structure</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MODAL: Official Payslip Printable Voucher
+       ====================================================================== -->
+  <div id="payslipModal" class="modal-overlay">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3 class="modal-title">Official Employee Salary Voucher</h3>
+        <button type="button" class="modal-close-btn" data-close-modal>&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="payslipPrintContent" class="payslip-preview">
+          <div class="payslip-header">
+            <div class="payslip-company-name">CORPPAY ENTERPRISE HOLDINGS LIMITED</div>
+            <div class="payslip-subtitle">Confidential Employee Pay Remittance Slip</div>
+          </div>
+
+          <div class="payslip-meta-grid">
+            <div class="payslip-meta-item"><span>Employee Name:</span> <strong id="pvEmpName">-</strong></div>
+            <div class="payslip-meta-item"><span>Employee Code:</span> <strong id="pvEmpId">-</strong></div>
+            <div class="payslip-meta-item"><span>Department:</span> <strong id="pvDept">-</strong></div>
+            <div class="payslip-meta-item"><span>Designation:</span> <strong id="pvDesignation">-</strong></div>
+            <div class="payslip-meta-item"><span>Pay Period:</span> <strong id="pvPeriod">-</strong></div>
+            <div class="payslip-meta-item"><span>Disbursement Status:</span> <span id="pvStatus" class="badge badge-paid">-</span></div>
+            <div class="payslip-meta-item"><span>Bank Reference Date:</span> <strong id="pvDisbursedDate">-</strong></div>
+            <div class="payslip-meta-item"><span>Currency:</span> <strong>INR (₹)</strong></div>
+          </div>
+
+          <div class="payslip-breakdown-grid">
+            <!-- Earnings -->
+            <div class="breakdown-box">
+              <div class="breakdown-box-header">Earnings & Allowances</div>
+              <div class="breakdown-row"><span>Basic Salary</span><span id="pvBasic">₹0</span></div>
+              <div class="breakdown-row"><span>House Rent Allowance (HRA)</span><span id="pvHra">₹0</span></div>
+              <div class="breakdown-row"><span>Special & Executive Allowance</span><span id="pvAllowance">₹0</span></div>
+              <div class="breakdown-total"><span>Gross Total Earnings</span><span id="pvGross">₹0</span></div>
+            </div>
+
+            <!-- Deductions -->
+            <div class="breakdown-box">
+              <div class="breakdown-box-header" style="background:#fee2e2; color:#991b1b;">Statutory Deductions</div>
+              <div class="breakdown-row"><span>Employee Provident Fund (EPF)</span><span id="pvPf">₹0</span></div>
+              <div class="breakdown-row"><span>Tax Deducted at Source (TDS)</span><span id="pvTax">₹0</span></div>
+              <div class="breakdown-row"><span>Group Mediclaim Contribution</span><span id="pvInsurance">₹0</span></div>
+              <div class="breakdown-total" style="background:#fef2f2; color:#991b1b;"><span>Total Deductions</span><span id="pvDeductions">₹0</span></div>
+            </div>
+          </div>
+
+          <!-- Net box -->
+          <div class="payslip-net-box">
+            <span>NET AMOUNT TRANSFERRED TO SALARY ACCOUNT:</span>
+            <span id="pvNetSalary" style="font-size: 18px;">₹0</span>
+          </div>
+
+          <div class="payslip-signatures">
+            <div class="signature-line">Authorized Signatory (HR)</div>
+            <div class="signature-line">Finance Comptroller</div>
+            <div class="signature-line">Employee Acknowledgment</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close-modal>Close</button>
+        <button type="button" id="btnPrintPayslip" class="btn btn-primary">🖨️ Print / Save as PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Hub -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
